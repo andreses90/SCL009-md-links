@@ -13,6 +13,9 @@ const pathToFile = process.argv[2];
 
 //transforma la ruta en absoluta
 let pathIntoAbsolute = path.resolve(pathToFile);
+console.log("absolute: ", pathIntoAbsolute)
+let pathNormalized = path.normalize(pathIntoAbsolute);
+console.log("normal: ",pathNormalized);
 
 const isFileOrDirectory = (path) => 
 fs.lstat(path, (err, stats) => {
@@ -40,4 +43,4 @@ const isMdFile = (file) =>{
   console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
   }
   };
-isFileOrDirectory(pathIntoAbsolute);
+isFileOrDirectory(pathNormalized);
