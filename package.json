@@ -1,4 +1,16 @@
 {
   "name": "md-links",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "filehound": "^1.17.0",
+    "marked": "^0.6.2",
+    "save": "^2.4.0"
+  },
+  "bin": {
+    "md-link": "index.js"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0"
+  }
 }
