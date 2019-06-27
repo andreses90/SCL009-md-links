@@ -25,7 +25,19 @@ fs.lstat(path, (err, stats) => {
       //checkDirectory(path);
     } else {
       console.log(`Is file: ${stats.isFile()}`);
-      //isMdFile(path);
+      isMdFile(path);
     }
 });
+
+//Función verifica si el file es de extensión .md
+const isMdFile = (file) =>{
+  let ext = path.extname(file);
+  console.log(ext);
+  if (ext === ".md"){
+  //readFile(file)
+  console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
+  } else{
+  console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
+  }
+  };
 isFileOrDirectory(pathIntoAbsolute);
