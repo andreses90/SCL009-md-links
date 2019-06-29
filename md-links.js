@@ -6,26 +6,23 @@ const chalk = require('chalk');
 
 
 //ruta del archivo ingresada por el usuario
-const pathToFile = process.argv[2];
+let pathToFile = process.argv[2];
 //
-// const firstOption = process.argv[3];
-// const secondOption = process.argv[4];
+const firstOption = process.argv[3];
+const secondOption = process.argv[4];
 
-//transforma la ruta en absoluta
-let pathIntoAbsolute = path.resolve(pathToFile);
-console.log("absolute: ", pathIntoAbsolute)
-let pathNormalized = path.normalize(pathIntoAbsolute);
-console.log("normal: ",pathNormalized);
+pathToFile = path.resolve(pathToFile);
+pathToFile = path.normalize(pathToFile);
 
 const isFileOrDirectory = (path) => 
 fs.lstat(path, (err, stats) => {
     if(err){
-    if(err.code == 'ENOENT'){
-      console.log(chalk.green("¡Pucha! Encontramos un error: \n - La ruta ingresada no es valida :("));
-    }
-    }else if (stats.isDirectory()){
+      if(err.code == 'ENOENT'){
+        console.log(chalk.green("¡Pucha! Encontramos un error: \n - La ruta ingresada no es valida :("));
+      }
+    } else if (stats.isDirectory()){
+      checkDirectory(path);
       console.log(`Is directory: ${stats.isDirectory()}`);
-      //checkDirectory(path);
     } else {
       console.log(`Is file: ${stats.isFile()}`);
       isMdFile(path);
@@ -34,13 +31,32 @@ fs.lstat(path, (err, stats) => {
 
 //Función verifica si el file es de extensión .md
 const isMdFile = (file) =>{
-  let ext = path.extname(file);
-  console.log(ext);
-  if (ext === ".md"){
+let ext = path.extname(file);
+console.log(ext);
+if (ext === ".md"){
   //readFile(file)
   console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
-  } else{
+} else{
   console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
+}
+};
+
+// const validate = (links) =>{
+//   console.log("soy la funcion validate", links)
+// }
+const checkDirectory = (path) =>{
+  FileHound.create()
+  .paths(path)
+  .ext('md')
+  .find((err, files) => {
+    if (files.length === 0) {
+    //console.log(chalk.magenta("Mira, no hay ningún archivo .md en este directorio..."));
   }
-  };
-isFileOrDirectory(pathNormalized);
+})
+.then(files =>{
+  files.forEach(file => { console.log(file)
+  }); 
+})
+};
+
+isFileOrDirectory(pathToFile)
