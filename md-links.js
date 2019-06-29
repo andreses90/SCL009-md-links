@@ -34,7 +34,14 @@ const isMdFile = (file) =>{
 let ext = path.extname(file);
 console.log(ext);
 if (ext === ".md"){
-  //readFile(file)
+  readFile(file)
+  .then(res => {
+    res;
+    console.log(res);
+  })
+  .catch(err => {
+    console.log(err)
+  })
   console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
 } else{
   console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
@@ -54,9 +61,40 @@ const checkDirectory = (path) =>{
   }
 })
 .then(files =>{
-  files.forEach(file => { console.log(file)
+  files.forEach(file => {
+    readFile(file)
+    .then(res => {
+      res;
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }); 
 })
+};
+
+//con promesa
+const readFile = (file) =>{
+  return new Promise ( (resolve, reject) => {
+    fs.readFile(file,'utf8', (error, data) => {
+      if (error) {
+        reject(error);
+      } else {
+        let links = [];
+        const renderer = new marked.Renderer();
+        renderer.link = function (href, title, text){
+          links.push({
+            href:href,
+            text:text,
+            file:file
+          })
+        }
+        marked(data,{renderer:renderer});
+        resolve(links);
+      }
+    });
+  })
 };
 
 isFileOrDirectory(pathToFile)
