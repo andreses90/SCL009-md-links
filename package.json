@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "dependencies": {
     "chalk": "^2.4.2",
+    "fetch": "^1.1.0",
     "filehound": "^1.17.0",
+    "link": "^0.1.5",
     "marked": "^0.6.2",
     "save": "^2.4.0"
   },
   "bin": {
-    "md-link": "index.js"
+    "md-links": "index.js"
   },
   "devDependencies": {
+    "eslint": "^6.0.1",
     "jest": "^24.8.0"
   }
 }

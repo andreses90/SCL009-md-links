@@ -4,6 +4,16 @@ const marked = require('marked');
 const FileHound = require('fileHound');
 const chalk = require('chalk');
 
+
+//ruta del archivo ingresada por el usuario
+let pathToFile = process.argv[2];
+//
+const firstOption = process.argv[3];
+const secondOption = process.argv[4];
+
+pathToFile = path.resolve(pathToFile);
+pathToFile = path.normalize(pathToFile);
+
 const isFileOrDirectory = (path) => 
 fs.lstat(path, (err, stats) => {
     if(err){
@@ -117,8 +127,9 @@ const mdLinks = (path, options) => {
     console.log(chalk.magenta("Humm...no entendí que quieres hacer... \n intenta con: \n --validate \n --stats \n --stats --validate"));
   }
 }
+mdLinks(pathToFile,[firstOption,secondOption]);
 
-module.exports = mdLinks;
+module.exports.mdlinks = mdlinks;
 
 
 // const isFileOrDirectory = (path) => 
