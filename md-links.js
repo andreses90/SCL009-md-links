@@ -97,4 +97,18 @@ const readFile = (file) =>{
   })
 };
 
-isFileOrDirectory(pathToFile)
+const mdLinks = (path, options) => {
+  if(options[0] === undefined && options[1] === undefined){
+    isFileOrDirectory(path);
+    console.log("nadinha")
+  }else if (options[0] === "--stats" && options[1] === "--validate"){
+    console.log("eligiste stats y validate")
+  }else if (options[0] === "--validate" && options[1] === undefined){
+    console.log("eligiste validar")
+  }else if (options[0] ==="--stats" && options[1] === undefined){
+    console.log("eligiste stats")
+  }else{
+    console.log(chalk.magenta("Humm...no entendí que quieres hacer... \n intenta con: \n --validate \n --stats \n --stats --validate"));
+  }
+}
+mdLinks(pathToFile,[firstOption,secondOption]);
