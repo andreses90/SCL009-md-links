@@ -2,121 +2,213 @@ const fs = require('fs');
 const path = require('path');
 const marked = require('marked');
 const FileHound = require('fileHound');
+const fetch = require('node-fetch');
 const chalk = require('chalk');
 
-const isFileOrDirectory = (path) => 
+const isFileOrDirectory = (path) => {
+  return new Promise ( (resolve, reject) => {
 fs.lstat(path, (err, stats) => {
     if(err){
       if(err.code == 'ENOENT'){
-        console.log(chalk.green("¡Pucha! Encontramos un error: \n - La ruta ingresada no es valida :("));
+       reject(console.log(chalk.green("¡Pucha! Encontramos un error: \n - La ruta ingresada no es valida :(")));
       }
     } else if (stats.isDirectory()){
-      checkDirectory(path);
-      console.log(`Is directory: ${stats.isDirectory()}`);
+      checkDirectory(path)
+      .then(res=>{
+        resolve(res)
+      })
+      .catch(err => {
+        reject(console.log(err))
+  })
+      //console.log(`Is directory: ${stats.isDirectory()}`);
     } else {
-      console.log(`Is file: ${stats.isFile()}`);
-      isMdFile(path);
+      //console.log(`Is file: ${stats.isFile()}`);
+      isMdFile(path)
+      .then(res=>{
+        resolve(res)
+      })
+      .catch(err => {
+        reject(console.log(err))
+  })
     }
-});
+})
+  })
+};
 
 //Función verifica si el file es de extensión .md
 const isMdFile = (file) =>{
-let ext = path.extname(file);
-console.log(ext);
-if (ext === ".md"){
-  readFile(file)
-  .then(res => {
-    res;
-    console.log(res);
+  return new Promise ( (resolve, reject) => {
+    let myFile = [];
+    let ext = path.extname(file);
+    //console.log(ext);
+    if (ext === ".md"){
+      myFile.push(file)
+      readFile(myFile)
+      .then(res=>{
+        resolve(res)
+      })
+      .catch(err => {
+        console.log(err)
   })
-  .catch(err => {
-    console.log(err)
-  })
-  console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
+  //console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
 } else{
-  console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
+  reject(console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)')));
 }
+  })
 };
 
 // const validate = (links) =>{
 //   console.log("soy la funcion validate", links)
 // }
 const checkDirectory = (path) =>{
-  FileHound.create()
-  .paths(path)
-  .ext('md')
-  .find((err, files) => {
-    if (files.length === 0) {
-    //console.log(chalk.magenta("Mira, no hay ningún archivo .md en este directorio..."));
-  }
-})
-.then(files =>{
-  files.forEach(file => {
-    readFile(file)
-    .then(res => {
-      res;
-      console.log(res);
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }); 
-})
-};
-
-//con promesa
-const readFile = (file) =>{
-  return new Promise ( (resolve, reject) => {
-    fs.readFile(file,'utf8', (error, data) => {
-      if (error) {
-        reject(error);
-      } else {
-        let links = [];
-        const renderer = new marked.Renderer();
-        renderer.link = function (href, title, text){
-          links.push({
-            href:href,
-            text:text,
-            file:file
-          })
-        }
-        marked(data,{renderer:renderer});
-        resolve(links);
+  return new Promise((resolve, reject) =>{
+    FileHound.create()
+    .paths(path)
+    .ext('md')
+    .find((err, files) => {
+      if (files.length === 0) {
+        console.log(chalk.magenta("Mira, no hay ningún archivo .md en este directorio..."));
       }
-    });
+    })
+    .then(files =>{
+      let myfiles =[];
+      files.forEach(file => {
+        myfiles.push(file)
+      })
+      readFile(myfiles)
+        .then(res=>{
+          resolve(res)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
   })
 };
 
-const callValidate = (path) =>{
-  console.log(isFileOrDirectory(path));
-
-//  linksToValidate.map(file => {
-//    fetch(file.href)
-//    .then(response =>{
-//      if (response.ok){
-//       console.log((`- Línea: ${chalk.blue(element.line)} - ${element.href} `), chalk.green.bold(`// ✓ ${response.status} ${response.statusText}`));
-//      }
-//    })
-//   })
-
-  
+//con promesa
+const readFile = (files) =>{
+  return Promise.all(files.map(file => {
+    return new Promise ( (resolve, reject) => {
+      fs.readFile(file,'utf8', (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          let links = [];
+          const renderer = new marked.Renderer();
+          renderer.link = function (href, title, text){
+            links.push({
+              href:href,
+              text:text,
+              file:file
+            })
+          }
+          marked(data,{renderer:renderer});
+          resolve(links);
+        }
+      });
+    })
+  }) )
 };
 
+const noOptions = (path) =>{
+ return new Promise ( (resolve, reject) => {
+   isFileOrDirectory(path)
+   .then(res=>{
+     resolve(res) 
+    })
+    .catch(err => {
+      reject(console.log(err))
+    })
+  })
+};
+//(`${chalk.magenta("- Archivo: ")}${chalk.yellow(link.file)}${chalk.bold(link.text)}${chalk.green(link.href)}`)
+
+// let linksToValidate = [ { href:
+//   'https://carlosazaustre.com/manejando-la-asincronia-en-javascript/',
+//  text:
+//   'https://carlosazaustre.com/manejando-la-asincronia-en-javascript/',
+//  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' },
+// { href: 'https://docs.npmjs.com/getting-started/what-is-npm',
+//  text: 'NPM',
+//  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' } ];
+
+const callValidate = (path) =>{
+    return new Promise ( (resolve, reject) => {
+      isFileOrDirectory(path)
+      .then(res=>{
+        validate(res)
+        .then(res=>{
+          resolve(res)
+        })
+        .catch(err => {
+          reject(console.log(err))
+        })
+      })
+      .catch(err => {
+        reject(console.log(err))
+      })
+    })
+  };
+
+
+const validate = (links) => {
+return Promise.all(links.map(link => {
+  return Promise.all(link.map(link => {
+  return new Promise((resolve, reject) =>{
+    fetch(link.href)
+    .then(res => {
+      if (res.status===404) {
+        link.status = res.status;
+        link.response = "fail";
+        resolve(link);
+      } else {
+        link.status = res.status;
+        link.response = res.statusText;
+        resolve(link); 
+      }
+    })
+    .catch(err => {
+      if(err){
+      link.status = null;
+      link.response = "fail"
+      resolve(link);
+    }
+  })
+  })
+  }))
+}))
+};
+
+
 const mdLinks = (path, options) => {
-  if(options[0] === undefined && options[1] === undefined){
-    isFileOrDirectory(path);
-    console.log("nadinha")
-  }else if (options[0] === "--stats" && options[1] === "--validate"){
-    console.log("eligiste stats y validate")
-  }else if (options[0] === "--validate" && options[1] === undefined){
-    console.log("eligiste validar")
-    callValidate(path);
-  }else if (options[0] ==="--stats" && options[1] === undefined){
-    console.log("eligiste stats")
-  }else{
-    console.log(chalk.magenta("Humm...no entendí que quieres hacer... \n intenta con: \n --validate \n --stats \n --stats --validate"));
-  }
-}
+  return new Promise ( (resolve, reject) => {
+    if(options[0] === undefined && options[1] === undefined){
+      noOptions(path)
+      .then(res=>{
+        resolve(res)
+      })
+      .catch(err => {
+        reject(console.log(err))
+      })
+      //console.log("nadinha")
+    }else if (options[0] === "--stats" && options[1] === "--validate"){
+      resolve(console.log("eligiste stats y validate"))
+    }else if (options[0] === "--validate" && options[1] === undefined){
+      callValidate(path)
+      .then(res=>{
+        resolve(res)
+      })
+      .catch(err => {
+        reject(console.log(err))
+      })
+    }else if (options[0] ==="--stats" && options[1] === undefined){
+      resolve(console.log("eligiste stats"))
+    }else{
+      reject(console.log(chalk.magenta("Humm...no entendí que quieres hacer... \n intenta con: \n --validate \n --stats \n --stats --validate")));
+    }
+  })
+};
 
 module.exports = mdLinks;
 

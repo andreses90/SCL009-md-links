@@ -1,10 +1,9 @@
-const mdLinks = require('./md-links');
+const mdLinks = require('../md-links.js');
 
 
 describe('mdLinks', () => {
 
-  it('should...', () => {
-    console.log('FIX ME!');
-  });
-
+  it('should be function', () => {
+    expect(typeof (mdLinks)).toBe('function');
+    });
 });

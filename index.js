@@ -1,4 +1,5 @@
-const mdLinks = require('./md-links');
+#!/usr/bin/env node
+const mdLinks = require('./md-links.js');
 const path = require('path');
 
 //ruta del archivo ingresada por el usuario
@@ -10,4 +11,10 @@ pathToFile = path.resolve(pathToFile);
 pathToFile = path.normalize(pathToFile);
 
 
-mdLinks(pathToFile,[firstOption,secondOption]);
+mdLinks(pathToFile,[firstOption,secondOption])
+.then(res => {
+  console.log(res);
+})
+.catch(err => {
+  console.log(err)
+})
