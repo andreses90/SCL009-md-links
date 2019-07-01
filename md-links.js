@@ -134,11 +134,9 @@ const noOptions = (path) =>{
 //  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' } ];
 
 const callValidate = (path) =>{
-  console.log("soy callv",path)
     return new Promise ( (resolve, reject) => {
       isFileOrDirectory(path)
       .then(res=>{
-        console.log("tuto",res)
         validate(res)
         .then(res=>{
           resolve(res)
@@ -155,7 +153,6 @@ const callValidate = (path) =>{
 
 
 const validate = (links) => {
-  console.log("soy vali",links)
 return Promise.all(links.map(link => {
   return Promise.all(link.map(link => {
   return new Promise((resolve, reject) =>{

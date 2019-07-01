@@ -84,17 +84,18 @@ describe('mdLinks', () => {
       response: 'OK' } ] ]
     ))
   })
-  test('debería retornar un reject para una opción no valida', () => {
-    return expect(mdLinks(filePath,["option1",option2])).rejects.toMatch('Humm...no entendí que quieres hacer... Intenta con: --validate');
-  });
   test('debería retornar un reject para un ruta no valida', () => {
     return expect(mdLinks(fileErr,[option1,option2])).rejects.toMatch('¡Pucha! Encontramos un error: La ruta ingresada no es valida :(');
   });
   test('debería retornar un reject para una opción no valida', () => {
-    return expect(mdLinks(fileJS,[option1,option2])).rejects.toMatch('¡Pucha! Encontramos un error: La ruta ingresada no es valida :(');
+    return expect(mdLinks(filePath,["option1",option2])).rejects.toMatch('Humm...no entendí que quieres hacer... Intenta con: --validate');
   });
-  test('debería retornar un reject para una opción no valida', () => {
+  test('debería retornar un reject para una ruta no valida aunque la opción sea valida', () => {
     return expect(mdLinks(fileErr,["--validate",option2])).rejects.toMatch('¡Pucha! Encontramos un error: La ruta ingresada no es valida :(');
   });
+  test('debería retornar un reject para un archivo que no es de extensión .md', () => {
+    return expect(mdLinks(fileJS,[option1,option2])).rejects.toMatch('¡Pucha! Encontramos un error: La ruta ingresada no es valida :(');
+  });
+  
  
  }) ;

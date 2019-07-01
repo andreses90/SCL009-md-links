@@ -13,7 +13,7 @@ pathToFile = path.normalize(pathToFile);
 
 mdLinks(pathToFile,[firstOption,secondOption])
 .then(res => {
-  console.log("soy index",res);
+  console.log(res);
 })
 .catch(err => {
   console.log(err)
