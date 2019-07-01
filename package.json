@@ -13,8 +13,9 @@
   "scripts": {
     "test": "jest --coverage"
   },
+  "main": "./md-links.js",
   "bin": {
-    "md-links": "./index.js"
+    "md-links": "./bin/cli.js"
   },
   "devDependencies": {
     "eslint": "^6.0.1",

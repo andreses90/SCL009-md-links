@@ -10,7 +10,7 @@ const isFileOrDirectory = (path) => {
 fs.lstat(path, (err, stats) => {
     if(err){
       if(err.code == 'ENOENT'){
-       reject(console.log(chalk.green("¡Pucha! Encontramos un error: \n - La ruta ingresada no es valida :(")));
+       reject(chalk.green("¡Pucha! Encontramos un error: La ruta ingresada no es valida :("));
       }
     } else if (stats.isDirectory()){
       checkDirectory(path)
@@ -18,7 +18,7 @@ fs.lstat(path, (err, stats) => {
         resolve(res)
       })
       .catch(err => {
-        reject(console.log(err))
+        reject(err)
   })
       //console.log(`Is directory: ${stats.isDirectory()}`);
     } else {
@@ -28,7 +28,7 @@ fs.lstat(path, (err, stats) => {
         resolve(res)
       })
       .catch(err => {
-        reject(console.log(err))
+        reject(err)
   })
     }
 })
@@ -48,11 +48,11 @@ const isMdFile = (file) =>{
         resolve(res)
       })
       .catch(err => {
-        console.log(err)
+        reject(err)
   })
   //console.log(chalk.cyan("¡Yupi! El archivo es .md :)"));
 } else{
-  reject(console.log (chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)')));
+  reject(chalk.magenta('¡Oye! Encontramos un error: \n - El archivo ingresado no es de extensión .md \n -¡Suerte! :)'));
 }
   })
 };
@@ -67,7 +67,7 @@ const checkDirectory = (path) =>{
     .ext('md')
     .find((err, files) => {
       if (files.length === 0) {
-        console.log(chalk.magenta("Mira, no hay ningún archivo .md en este directorio..."));
+        (chalk.magenta("Mira, no hay ningún archivo .md en este directorio..."));
       }
     })
     .then(files =>{
@@ -118,7 +118,7 @@ const noOptions = (path) =>{
      resolve(res) 
     })
     .catch(err => {
-      reject(console.log(err))
+      reject(err)
     })
   })
 };
@@ -134,25 +134,28 @@ const noOptions = (path) =>{
 //  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' } ];
 
 const callValidate = (path) =>{
+  console.log("soy callv",path)
     return new Promise ( (resolve, reject) => {
       isFileOrDirectory(path)
       .then(res=>{
+        console.log("tuto",res)
         validate(res)
         .then(res=>{
           resolve(res)
         })
         .catch(err => {
-          reject(console.log(err))
+          reject(err)
         })
       })
       .catch(err => {
-        reject(console.log(err))
+        reject(err)
       })
     })
   };
 
 
 const validate = (links) => {
+  console.log("soy vali",links)
 return Promise.all(links.map(link => {
   return Promise.all(link.map(link => {
   return new Promise((resolve, reject) =>{
@@ -189,29 +192,30 @@ const mdLinks = (path, options) => {
         resolve(res)
       })
       .catch(err => {
-        reject(console.log(err))
+        reject(err)
       })
       //console.log("nadinha")
-    }else if (options[0] === "--stats" && options[1] === "--validate"){
-      resolve(console.log("eligiste stats y validate"))
+    // }else if (options[0] === "--stats" && options[1] === "--validate"){
+    //   resolve(console.log("eligiste stats y validate"))
     }else if (options[0] === "--validate" && options[1] === undefined){
       callValidate(path)
       .then(res=>{
         resolve(res)
       })
       .catch(err => {
-        reject(console.log(err))
+        reject(err)
       })
-    }else if (options[0] ==="--stats" && options[1] === undefined){
-      resolve(console.log("eligiste stats"))
+    // }else if (options[0] ==="--stats" && options[1] === undefined){
+    //   resolve(console.log("eligiste stats"))
     }else{
-      reject(console.log(chalk.magenta("Humm...no entendí que quieres hacer... \n intenta con: \n --validate \n --stats \n --stats --validate")));
+      reject(chalk.magenta("Humm...no entendí que quieres hacer... Intenta con: --validate"));
     }
   })
 };
 
 module.exports = mdLinks;
 
+//\n --stats \n --stats --validate
 
 // const isFileOrDirectory = (path) => 
 // fs.lstat(path, (err, stats) => {
