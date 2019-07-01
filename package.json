@@ -1,5 +1,5 @@
 {
-  "name": "md-links",
+  "name": "gm-md-links",
   "version": "0.1.0",
   "dependencies": {
     "chalk": "^2.4.2",
@@ -13,9 +13,8 @@
   "scripts": {
     "test": "jest --coverage"
   },
-  "main": "./md-links.js",
   "bin": {
-    "md-links": "./bin/cli.js"
+    "md-links": "./index.js"
   },
   "devDependencies": {
     "eslint": "^6.0.1",
