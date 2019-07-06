@@ -79,62 +79,33 @@ const readFile = (file) =>{
     fs.readFile(file,'utf8', (error, data) => {
       let links = [];
       const renderer = new marked.Renderer();
+      //https://github.com/markedjs/marked/issues/1279
+      let linkWithImageSizeSupport = /^!?\[((?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?)\]\(\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f()\\]*\)|[^\s\x00-\x1f()\\])*?(?:\s+=(?:[\w%]+)?x(?:[\w%]+)?)?)(?:\s+("(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)))?\s*\)/;
+      marked.InlineLexer.rules.normal.link = linkWithImageSizeSupport;
+      marked.InlineLexer.rules.gfm.link = linkWithImageSizeSupport;
+      marked.InlineLexer.rules.breaks.link = linkWithImageSizeSupport;
       renderer.link = function (href, title, text){
         links.push({
           href:href,
           text:text,
           file:file
-        })
-      }
+        });
+      };
+      renderer.image = function (href, title, text, line) {
+        // Remove image size at the end, e.g. ' =20%x50'
+        href = href.replace(/ =\d*%?x\d*%?$/, "");
+        links.push({
+          href:href,
+          text:text,
+          file:file
+        }); 
+    };
       marked(data,{renderer:renderer});
       resolve(links);   
     })
   });
 };
 
-const callValidate = (path,option) =>{
-    return new Promise ( (resolve, reject) => {
-      if(option === "--validate"){
-        isFileOrDirectory(path)
-        .then(links=>{
-          validate(links)
-          .then(res=>{
-            resolve(res)
-          })
-          .catch(err=>{
-            reject(err)
-          })
-        })
-        .catch(err => {
-          console.log("call err",err)
-        })
-      }else if (option === "--stats"){
-        isFileOrDirectory(path)
-        .then(links=>{
-          validate(links)
-          .then(res=>{
-            stats(res)
-          .then(res=>{
-            resolve(res)
-          })
-          .catch(err=>{
-            reject(err)
-          })
-          })
-          .catch(err=>{
-            reject(err)
-          })
-        })
-        .catch(err => {
-          console.log("call err",err)
-        })
-        .catch(err => {
-          console.log("call err",err)
-        })  
-      }
-      
-    })
-  };
 const validate = (links) => {
 return Promise.all(links.map(link => {
   return new Promise((resolve, reject) =>{
@@ -166,9 +137,11 @@ const stats = (links) => {
       let allLinks = links.map(link=>link.href);
       let linksTotal = allLinks.length;
       let linksUnique = [...new Set(allLinks)].length
-      let linksBroken = links.filter(link=>{ if(link.response==="fail"){
-        return link.response
+      let linksBroken = [];
+      links.filter(link=>{ if(link.response ==="fail"){
+        linksBroken.push(link.response)
       } 
+      
         });
         linksBroken = linksBroken.length;
         let result = {
@@ -198,21 +171,42 @@ const mdLinks = (path, options) => {
       .catch(err=>{
         reject(err)
       })    }else if (options[0] === "--validate" && options[1] === undefined){
-      callValidate(path,options[0])
-      .then(res=>{
-        resolve(res)
-      })
-      .catch(err=>{
-        reject(err)
-      })
+        isFileOrDirectory(path)
+        .then(links=>{
+          validate(links)
+          .then(res=>{
+            resolve(res)
+          })
+          .catch(err=>{
+            reject(err)
+          })
+        })
+        .catch(err => {
+          console.log("call err",err)
+        })
     }else if (options[0] ==="--stats" && options[1] === undefined){
-      callValidate(path,options[0])
-      .then(res=>{
-        resolve(res)
+      isFileOrDirectory(path)
+      .then(links=>{
+        validate(links)
+        .then(res=>{
+          stats(res)
+        .then(res=>{
+          resolve(res)
+        })
+        .catch(err=>{
+          reject(err)
+        })
+        })
+        .catch(err=>{
+          reject(err)
+        })
       })
-      .catch(err=>{
-        reject(err)
+      .catch(err => {
+        console.log("call err",err)
       })
+      .catch(err => {
+        console.log("call err",err)
+      })  
     }else{
       reject(chalk.magenta("Humm...no entendí que quieres hacer... Intenta con: --validate"));
     }
@@ -220,149 +214,3 @@ const mdLinks = (path, options) => {
 };
 
 module.exports = mdLinks;
-
-//con promesa
-// const noOptions = (path) =>{
-//   let myLinks = [];
-//   console.log("siiiiiiii", path)
-//   return new Promise ( (resolve, reject) => {
-//     isFileOrDirectory(path)
-//     .then(res=>{
-//       console.log("noooo", res)
-//       return Promise.all(
-//         res.map(link=> {
-//         console.log("EL LIKNK:", link);
-//         myLinks.push((`- FILE: ${chalk.blue(link.file)}\n- TEXT: ${chalk.bold(link.text)} \n- HREF: ${chalk.green(link.href)}`));
-//         console.log("todos los links2",myLinks)
-//         resolve(myLinks)
-//       }))
-//     })
-//   })
-// };
-// //(`${chalk.magenta("- Archivo: ")}${chalk.yellow(link.file)}${chalk.bold(link.text)}${chalk.green(link.href)}`)
-
-// // let linksToValidate = [ { href:
-// //   'https://carlosazaustre.com/manejando-la-asincronia-en-javascript/',
-// //  text:
-// //   'https://carlosazaustre.com/manejando-la-asincronia-en-javascript/',
-// //  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' },
-// // { href: 'https://docs.npmjs.com/getting-started/what-is-npm',
-// //  text: 'NPM',
-// //  file: 'C:\\SCL009-md-links\\mdpruebas\\r.md' } ];
-
-// const callValidate = (path) =>{
-//     return new Promise ( (resolve, reject) => {
-//       isFileOrDirectory(path)
-//       .then(res=>{
-//         validate(res)
-//         .then(res=>{
-//           resolve(res)
-//         })
-//       })
-//       .catch(err => {
-//         reject(err)
-//       })
-//     })
-//   };
-
-// const validate = (links) => {
-// return Promise.all(links.map(link => {
-//   return Promise.all(link.map(link => {
-//   return new Promise((resolve, reject) =>{
-//     fetch(link.href)
-//     .then(res => {
-//       if (res.status>400) {
-//         link.status = res.status;
-//         link.response = "fail";
-//         resolve(link);
-//       } else {
-//         link.status = res.status;
-//         link.response = res.statusText;
-//         resolve(link); 
-//       }
-//     })
-//     .catch(err => {
-//       if(err){
-//       link.status = null;
-//       link.response = "fail"
-//       resolve(link);
-//     }
-//   })
-//   })
-//   }))
-// }))
-// };
-// // res.map(el => el.href)
-// // const callStats = (path) =>{
-// //   callValidate(path)
-// //   .then(res=> {
-// //     console.log("res",res)
-// //     return Promise.all(res.map(file=>{
-// //         return new Promise((resolve, reject) =>{
-// //           console.log("aaaaaaaaaaaa",file)
-// //           stats(file)
-// //           .then(res=>{
-// //             resolve(res)
-// //           })
-// //           .catch(err=> {
-// //             reject(err)
-// //           })
-// //         })
-// //       }))
-// //   })
-// // };
-//  const callStats = (path) => {
-//    return new Promise((resolve,reject)=> {
-//     callValidate(path)
-//     .then(res=> {
-//       beforeStats(res)
-//       .then(res=> {
-//         resolve(res)
-//       })
-//     }).catch(err=> {
-//       reject(err)
-//     })
-//    })
-//  };
-
-// const beforeStats =(files)=>{
-//   return Promise.all(files.map(file=>{
-//     return Promise.all(file.map(link=>{
-//       return new Promise((resolve,reject)=>{
-//       stats(link.href)
-//       .then(res=> {
-//         resolve(res)
-//       })
-//       .catch(err=> {
-//         reject(err)
-//       })
-//       })
-//   }))
-// }))
-// };
-
-// const stats = (links) => {
-//     return new Promise((resolve,reject)=> {
-//       console.log("stats1",links)
-//       let allLinks = [links].length;
-//       resolve(allLinks)
-//       console.log("stats2",allLinks)
-//     })
-// }
-
-
-// // const stats = (links) => {
-// //   return new Promise((resolve,reject)=>{
-// //     let myLinks = links.map(link=>link.href);
-// //     let linksTotal = myLinks.length;
-// //     console.log("statssss",linksTotal)
-// //     resolve(linksTotal)
-//     // let linksUnique = [new Set(allLinks)].length;
-//     // let linksBroken = links.filter(link => {link.statusCode < 200 || link.statusCode > 400});
-//     //   linksBroken=linksBroken.length;
-//     //   resolve(`Links Unicos: ${linksUnique}, Links Totales: ${linksTotal}, Links Rotos: ${linksBroken}`)
-// //   })
-// //  }
-
-
-
