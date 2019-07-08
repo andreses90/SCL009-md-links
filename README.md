@@ -47,6 +47,7 @@ En ambos casos, se obtiene como resultado:
 **OPTIONS**
 
 **--validate**
+
 Entrega la validacion o status de los links (status: 200, 404, etc). Por ejemplo:
 
 `md-links <path-to-file.md> --validate`
@@ -54,6 +55,7 @@ Entrega la validacion o status de los links (status: 200, 404, etc). Por ejemplo
 ![validate](img/validate.jpg)
 
 **--stats**
+
 Entrega la seguiente estadística: 
 `Total -` el total de links encontrados;
 `Unique -` el total de links unicos.
@@ -63,9 +65,9 @@ Entrega la seguiente estadística:
 ![stats](img/stats.jpg)
 
 **--stats --validate**
+
 Las dos opiciones combinadas, además de `Total` y `Unique`, agrega la seguiente estadística: 
 `Broken -` el total de links rotos;
-
 
 `md-links <path-to-file.md> --stats`
 
@@ -85,13 +87,15 @@ Las dos opiciones combinadas, además de `Total` y `Unique`, agrega la seguiente
 
 ### Planificación:
 
-* Diagrama de Flujo:
+* ** Diagrama de Flujo**:
 
 ![flujo](img/flujo.png)
 
-*  Trello:
+*  **Trello**:
+
 El board con el backlog de la implementación de la librería puede ser encontrado [aquí.](https://trello.com/b/nYJHHPKY/mdlinkd)
 
 
 ### Autor
+---
 [Giselle Machado](https://github.com/gisellem22)
