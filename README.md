@@ -96,6 +96,6 @@ Las dos opiciones combinadas, además de `Total` y `Unique`, agrega la seguiente
 El board con el backlog de la implementación de la librería puede ser encontrado [aquí.](https://trello.com/b/nYJHHPKY/mdlinkd)
 
 
-### Autor
+## Autor
 
 [Giselle Machado](https://github.com/gisellem22)
