@@ -87,7 +87,7 @@ Las dos opiciones combinadas, además de `Total` y `Unique`, agrega la seguiente
 
 ### Planificación:
 
-* ** Diagrama de Flujo**:
+* **Diagrama de Flujo**:
 
 ![flujo](img/flujo.png)
 
