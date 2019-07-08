@@ -157,6 +157,17 @@ const mdLinks = (path, options) => {
       .catch(err => {
         reject(err);
       });
+    } else if (options[0] === "--stats" && options[1] === "--validate") {
+      isFileOrDirectory(path)
+      .then(links => {
+        validate(links)
+        .then(res => {
+          stats(res)
+          .then(res => {
+            resolve(res);
+          });
+        });
+      });  
     } else if (options[0] === "--validate" && options[1] === undefined) {
       isFileOrDirectory(path)
       .then(links => {
