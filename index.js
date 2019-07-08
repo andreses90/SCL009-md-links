@@ -32,8 +32,6 @@ mdLinks(pathToFile,[firstOption,secondOption])
 .then(links => {
 if (!options.stats && !options.validate) {
       links.map(link => {console.log(chalk.bgMagenta("- FILE:")+chalk.magenta(link.file)+"\n"+chalk.magenta("- TEXT:")+chalk.bold(link.text)+ "\n"+chalk.magenta("- HREF:")+chalk.bold(link.href))});
-} else if (options.stats && options.validate) {
-  console.log(chalk.bgMagenta("Total :")+" "+chalk.white(links.Total)+"\n"+chalk.bgCyan("Unique:")+" "+chalk.white(links.Unique)+"\n"+chalk.bgRed("Broken:")+" "+chalk.white(links.Broken));
 } else if (options.validate) {
   links.map(link => {
     if (link.response === "OK") {
