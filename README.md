@@ -97,5 +97,5 @@ El board con el backlog de la implementación de la librería puede ser encontra
 
 
 ### Autor
----
+
 [Giselle Machado](https://github.com/gisellem22)
