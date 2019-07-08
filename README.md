@@ -13,7 +13,7 @@ npm install gm-md-links
 En el archivo JS:
 
 ```js
-const md-links = require('gm-md-links');   
+const mdlinks = require('gm-md-links');   
 ```
 
 En la terminal:
@@ -66,10 +66,10 @@ Entrega la seguiente estadística:
 
 **--stats --validate**
 
-Las dos opiciones combinadas, además de `Total` y `Unique`, agrega la seguiente estadística: 
+Las dos opiciones combinadas, además de `Total` y `Unique`, agregan la seguiente estadística: 
 `Broken -` el total de links rotos;
 
-`md-links <path-to-file.md> --stats`
+`md-links <path-to-file.md> --stats --validate`
 
 ![statsValidate](img/statsvalidate.jpg)
 
